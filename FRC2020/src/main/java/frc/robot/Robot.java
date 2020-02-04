@@ -36,12 +36,14 @@ public class Robot extends TimedRobot {
 
   private WPI_TalonFX  talonfx = new WPI_TalonFX(2);
 
- /* private CANSparkMax leftMotor;
+ private CANSparkMax leftMotor;
   private CANSparkMax rightMotor;
-  private int leftdr = 0;
-  private int rightdr = 1;
 
-  private XboxController xbox; */
+
+  private int leftdrTalonID = 0; //CHANGE TALON ID
+  private int rightdrTalonID = 1;  //CHANGE TALON ID
+
+  private XboxController xbox; 
 
 
   /**
@@ -54,11 +56,11 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-  /* leftMotor = new CANSparkMax(leftdr, MotorType.kBrushless);
-   rightMotor = new CANSparkMax(rightdr, MotorType.kBrushless);
+   leftMotor = new CANSparkMax(leftdrTalonID, MotorType.kBrushless);
+   rightMotor = new CANSparkMax(rightdrTalonID, MotorType.kBrushless);
 
    drive = new DifferentialDrive(leftMotor, rightMotor);
-   xbox = new XboxController(0); */
+   xbox = new XboxController(0); 
   }
 
   /**
@@ -116,15 +118,15 @@ public class Robot extends TimedRobot {
    // if(xbox.getAButton()){
     talonfx.set(1.0); //0.25
 
-    //rate per minute vs percentage
-    talonfx.
+    //rate per minute vs percentage for later
+   // talonfx.
 
  // }
-/*
+
     double XboxPosX = xbox.getX(Hand.kLeft); //was previsouly kRight
     double XboxPosY = xbox.getTriggerAxis(Hand.kLeft) - xbox.getTriggerAxis(Hand.kRight);
 
-    drive.arcadeDrive(-XboxPosY,XboxPosX);*/
+    drive.arcadeDrive(-XboxPosY,XboxPosX);
       
   }
 
