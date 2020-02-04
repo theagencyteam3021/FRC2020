@@ -39,11 +39,12 @@ public class Robot extends TimedRobot {
  private CANSparkMax leftMotor;
   private CANSparkMax rightMotor;
 
-
+/// CHANGE TALON IDS
   private int leftdrTalonID = 0; //CHANGE TALON ID
-  private int rightdrTalonID = 1;  //CHANGE TALON ID
-
+  private int rightdrTalonID = 0;  //CHANGE TALON ID
+////
   private XboxController xbox; 
+
 
 
   /**
