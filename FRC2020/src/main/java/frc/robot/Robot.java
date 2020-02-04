@@ -115,13 +115,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-   // if(xbox.getAButton()){
+    if(xbox.getAButton()){
     talonfx.set(1.0); //0.25
-
+    }
     //rate per minute vs percentage for later
    // talonfx.
 
- // }
+ 
 
     double XboxPosX = xbox.getX(Hand.kLeft); //was previsouly kRight
     double XboxPosY = xbox.getTriggerAxis(Hand.kLeft) - xbox.getTriggerAxis(Hand.kRight);
