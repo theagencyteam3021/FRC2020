@@ -164,12 +164,23 @@ public class Robot extends TimedRobot {
       drive.arcadeDrive(-XboxPosY,XboxPosX);
 
       //Intake
-        
-      //Carousel
+      if (xbox.getAButton()){
+        intake.set(0.5);
+      }else{intake.set(0); }
 
-      //Shooter
+      if (xbox.getBButton()){
+        secondaryIntake.set(0.5);
+      }else{secondaryIntake.set(0);}
+
+      //Carousel
+      if (xbox.getBumper(Hand.kRight)){
+        carousel.set(0.5);
+      }else{ carousel.set(0);}
 
       //Falcon
+      if (xbox.getXButton()&&xbox.getYButton()){
+        talonFX.set(0.5);
+      }else{ talonFX.set(0);}
       
       
   }
