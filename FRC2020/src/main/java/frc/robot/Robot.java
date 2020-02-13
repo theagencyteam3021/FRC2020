@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -32,12 +33,22 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-
-
-  private WPI_TalonFX  talonfx = new WPI_TalonFX(2);
-
+//Drive
  private CANSparkMax leftMotor, left2motor;
   private CANSparkMax rightMotor, right2motor;
+  //Falcon
+  private WPI_TalonFX  talonFX;
+  //Intake
+  private CANSparkMax intake;
+  //Secondary Intake
+  private CANSparkMax secondaryIntake;
+  //Carousel
+  private CANSparkMax carousel;
+  private CANSparkMax carouselUnload;
+  //Shooter
+  private CANSparkMax shooter1; 
+  private CANSparkMax shooter2; 
+
 
 /// CHANGE CAN IDS
     //Drive
@@ -47,6 +58,7 @@ public class Robot extends TimedRobot {
   private int right2drCANID = 0;  //CHANGE CAN ID
     //Intake
   private int intakeCANID = 0; //CHANGE CAN ID
+  private int secondaryIntakeCANID = 0; //CHANGE CAN ID
     //Carousel
   private int carousel1CANID = 0; //CHANGE CAN ID
   private int carouselUnloadCANID = 0; //CHANGE CAN ID
@@ -54,6 +66,7 @@ public class Robot extends TimedRobot {
   private int shooter1CANID = 0; //CHANGE CAN ID
   private int shooter2CANID = 0; //CHANGE CAN ID
   //Falcon ID
+  private int talonfxCANID = 0; //CHANGE CAN ID
 ////
   private XboxController xbox; 
 
@@ -79,6 +92,19 @@ public class Robot extends TimedRobot {
 
    drive = new DifferentialDrive(leftMotor, rightMotor);
    xbox = new XboxController(0); 
+
+  //Falcon
+   talonFX = new WPI_TalonFX(talonfxCANID);
+  //Intake
+   intake = new CANSparkMax(intakeCANID, MotorType.kBrushless);
+  //Secondary Intake
+    secondaryIntake = new CANSparkMax(secondaryIntakeCANID, MotorType.kBrushless);
+  //Carousel
+    carousel = new CANSparkMax(carousel1CANID, MotorType.kBrushless);
+    carouselUnload = new CANSparkMax(carouselUnloadCANID, MotorType.kBrushless);
+  //Shooter
+    shooter1 = new CANSparkMax(shooter1CANID, MotorType.kBrushless); 
+    shooter2 = new CANSparkMax(shooter2CANID, MotorType.kBrushless); 
   }
 
   /**
@@ -133,18 +159,18 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    if(xbox.getAButton()){
-    talonfx.set(1.0); //0.25
-    }
-    //rate per minute vs percentage for later
-   // talonfx.
+      double XboxPosX = xbox.getX(Hand.kLeft); //was previsouly kRight
+      double XboxPosY = xbox.getTriggerAxis(Hand.kLeft) - xbox.getTriggerAxis(Hand.kRight);
+      drive.arcadeDrive(-XboxPosY,XboxPosX);
 
- 
+      //Intake
+        
+      //Carousel
 
-    double XboxPosX = xbox.getX(Hand.kLeft); //was previsouly kRight
-    double XboxPosY = xbox.getTriggerAxis(Hand.kLeft) - xbox.getTriggerAxis(Hand.kRight);
+      //Shooter
 
-    drive.arcadeDrive(-XboxPosY,XboxPosX);
+      //Falcon
+      
       
   }
 
