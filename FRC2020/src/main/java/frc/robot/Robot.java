@@ -36,12 +36,24 @@ public class Robot extends TimedRobot {
 
   private WPI_TalonFX  talonfx = new WPI_TalonFX(2);
 
- private CANSparkMax leftMotor;
-  private CANSparkMax rightMotor;
+ private CANSparkMax leftMotor, left2motor;
+  private CANSparkMax rightMotor, right2motor;
 
-/// CHANGE TALON IDS
-  private int leftdrTalonID = 0; //CHANGE TALON ID
-  private int rightdrTalonID = 0;  //CHANGE TALON ID
+/// CHANGE CAN IDS
+    //Drive
+  private int leftdrCANID = 0; //CHANGE  ID
+  private int left2drCANID = 0; //CHANGE CAN ID
+  private int rightdrCANID = 0;  //CHANGE CAN ID
+  private int right2drCANID = 0;  //CHANGE CAN ID
+    //Intake
+  private int intakeCANID = 0; //CHANGE CAN ID
+    //Carousel
+  private int carousel1CANID = 0; //CHANGE CAN ID
+  private int carouselUnloadCANID = 0; //CHANGE CAN ID
+    //Shooter
+  private int shooter1CANID = 0; //CHANGE CAN ID
+  private int shooter2CANID = 0; //CHANGE CAN ID
+  //Falcon ID
 ////
   private XboxController xbox; 
 
@@ -57,8 +69,13 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-   leftMotor = new CANSparkMax(leftdrTalonID, MotorType.kBrushless);
-   rightMotor = new CANSparkMax(rightdrTalonID, MotorType.kBrushless);
+   leftMotor = new CANSparkMax(leftdrCANID, MotorType.kBrushless);
+   left2motor = new CANSparkMax(left2drCANID, MotorType.kBrushless);
+   rightMotor = new CANSparkMax(rightdrCANID, MotorType.kBrushless);
+   right2motor = new CANSparkMax(right2drCANID, MotorType.kBrushless);
+
+   left2motor.follow(leftMotor);
+   right2motor.follow(rightMotor);
 
    drive = new DifferentialDrive(leftMotor, rightMotor);
    xbox = new XboxController(0); 
