@@ -48,25 +48,29 @@ public class Robot extends TimedRobot {
   //Shooter
   private CANSparkMax shooter1; 
   private CANSparkMax shooter2; 
+  //Elevator
+  private CANSparkMax elevator;
 
 
 /// CHANGE CAN IDS
     //Drive
-  private int leftdrCANID = 0; //CHANGE  ID
-  private int left2drCANID = 0; //CHANGE CAN ID
-  private int rightdrCANID = 0;  //CHANGE CAN ID
-  private int right2drCANID = 0;  //CHANGE CAN ID
+  private int leftdrCANID = 13; //CHANGE  ID
+  private int left2drCANID = 8; //CHANGE CAN ID
+  private int rightdrCANID = 14;  //CHANGE CAN ID
+  private int right2drCANID = 9;  //CHANGE CAN ID
     //Intake
-  private int intakeCANID = 0; //CHANGE CAN ID
-  private int secondaryIntakeCANID = 0; //CHANGE CAN ID
+  private int intakeCANID = 7; //CHANGE CAN ID
+  private int secondaryIntakeCANID = 10; //CHANGE CAN ID
     //Carousel
-  private int carousel1CANID = 0; //CHANGE CAN ID
-  private int carouselUnloadCANID = 0; //CHANGE CAN ID
+  private int carousel1CANID = 12; //CHANGE CAN ID
+  private int carouselUnloadCANID = 16; //CHANGE CAN ID
     //Shooter
-  private int shooter1CANID = 0; //CHANGE CAN ID
-  private int shooter2CANID = 0; //CHANGE CAN ID
+  private int shooter1CANID = 11; //CHANGE CAN ID
+  private int shooter2CANID = 15; //CHANGE CAN ID
   //Falcon ID
   private int talonfxCANID = 0; //CHANGE CAN ID
+  //Elevator
+  private int elevetorCANID = 17;
 ////
   private XboxController xbox; 
 
@@ -105,6 +109,9 @@ public class Robot extends TimedRobot {
   //Shooter
     shooter1 = new CANSparkMax(shooter1CANID, MotorType.kBrushless); 
     shooter2 = new CANSparkMax(shooter2CANID, MotorType.kBrushless); 
+    //Elevator
+    elevator = new CANSparkMax(elevetorCANID, MotorType.kBrushless); 
+
   }
 
   /**
@@ -176,13 +183,39 @@ public class Robot extends TimedRobot {
       if (xbox.getBumper(Hand.kRight)){
         carousel.set(0.5);
       }else{ carousel.set(0);}
+      if (xbox.getBButton()){
+        carouselUnload.set(0.5);
+      }
+      else{
+        carouselUnload.set(0);
+      }
 
       //Falcon
       if (xbox.getXButton()&&xbox.getYButton()){
         talonFX.set(0.5);
       }else{ talonFX.set(0);}
       
-      
+      //Shooter
+      if (xbox.getBackButton()){
+        intake.set(0.5);
+        secondaryIntake.set(0.5);
+      }
+      else if (xbox.getStartButton()){
+        intake.set(-0.5);
+        secondaryIntake.set(-0.5);
+      }
+      else{
+        intake.set(0);
+        secondaryIntake.set(0.0);
+      }
+
+      if (xbox.getYButton()){
+        elevator.set(0.5);
+      }
+      else{
+        elevator.set(0);
+      }
+
   }
 
   /**
