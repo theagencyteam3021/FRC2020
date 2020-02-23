@@ -9,7 +9,9 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.revrobotics.CANDigitalInput;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.*;
@@ -18,6 +20,8 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -75,6 +79,14 @@ public class Robot extends TimedRobot {
   private XboxController xbox; 
 
 
+ boolean MODE_LOADING = true; //TODO: change to false in auto init with the other limit switch. Set to true for testing. 
+ boolean CAROUSEL_REQUEST_ADVANCE = false;
+ CANDigitalInput CarouselForwardLimit ;
+
+
+ CANDigitalInput.LimitSwitchPolarity carouselForwardLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyOpen;
+ 
+
 
   /**
    * This function is run when the robot is first started up and should be
@@ -104,13 +116,24 @@ public class Robot extends TimedRobot {
   //Secondary Intake
     secondaryIntake = new CANSparkMax(secondaryIntakeCANID, MotorType.kBrushless);
   //Carousel
-    carousel = new CANSparkMax(carousel1CANID, MotorType.kBrushless);
     carouselUnload = new CANSparkMax(carouselUnloadCANID, MotorType.kBrushless);
+
+    carousel = new CANSparkMax(carousel1CANID, MotorType.kBrushless);
+     CarouselForwardLimit = new CANDigitalInput(carousel, CANDigitalInput.LimitSwitch.kForward, carouselForwardLimitSwithPolarity);
+ 
+
+
   //Shooter
     shooter1 = new CANSparkMax(shooter1CANID, MotorType.kBrushless); 
     shooter2 = new CANSparkMax(shooter2CANID, MotorType.kBrushless); 
     //Elevator
     elevator = new CANSparkMax(elevetorCANID, MotorType.kBrushless); 
+
+    //Carousel for Carousel Movement
+
+ 
+ 
+ 
 
   }
 
@@ -166,55 +189,63 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-      double XboxPosX = xbox.getX(Hand.kLeft); //was previsouly kRight
-      double XboxPosY = xbox.getTriggerAxis(Hand.kLeft) - xbox.getTriggerAxis(Hand.kRight);
-      drive.arcadeDrive(-XboxPosY,XboxPosX);
+      // double XboxPosX = xbox.getX(Hand.kLeft); //was previsouly kRight
+      // double XboxPosY = xbox.getTriggerAxis(Hand.kLeft) - xbox.getTriggerAxis(Hand.kRight);
+      // drive.arcadeDrive(-XboxPosY,XboxPosX);
 
-      //Intake
-      if (xbox.getAButton()){
-        intake.set(0.5);
-      }else{intake.set(0); }
+      // //Intake
+      // if (xbox.getAButton()){
+      //   intake.set(0.5);
+      // }else{intake.set(0); }
 
-      if (xbox.getBButton()){
-        secondaryIntake.set(0.5);
-      }else{secondaryIntake.set(0);}
+      // if (xbox.getBButton()){
+      //   secondaryIntake.set(0.5);
+      // }else{secondaryIntake.set(0);}
 
-      //Carousel
-      if (xbox.getBumper(Hand.kRight)){
-        carousel.set(0.5);
-      }else{ carousel.set(0);}
-      if (xbox.getBButton()){
-        carouselUnload.set(0.5);
-      }
-      else{
-        carouselUnload.set(0);
-      }
+      // //Carousel
+      // if (xbox.getBumper(Hand.kRight)){
+      //   carousel.set(0.5);
+      // }else{ carousel.set(0);}
+      // if (xbox.getBButton()){
+      //   carouselUnload.set(0.5);
+      // }
+      // else{
+      //   carouselUnload.set(0);
+      // }
 
-      //Falcon
-      if (xbox.getXButton()&&xbox.getYButton()){
-        talonFX.set(0.5);
-      }else{ talonFX.set(0);}
+      // //Falcon
+      // if (xbox.getXButton()&&xbox.getYButton()){
+      //   talonFX.set(0.5);
+      // }else{ talonFX.set(0);}
       
-      //Shooter
-      if (xbox.getBackButton()){
-        intake.set(0.5);
-        secondaryIntake.set(0.5);
-      }
-      else if (xbox.getStartButton()){
-        intake.set(-0.5);
-        secondaryIntake.set(-0.5);
-      }
-      else{
-        intake.set(0);
-        secondaryIntake.set(0.0);
-      }
+      // //Shooter
+      // if (xbox.getBackButton()){
+      //   intake.set(0.5);
+      //   secondaryIntake.set(0.5);
+      // }
+      // else if (xbox.getStartButton()){
+      //   intake.set(-0.5);
+      //   secondaryIntake.set(-0.5);
+      // }
+      // else{
+      //   intake.set(0);
+      //   secondaryIntake.set(0.0);
+      // }
 
-      if (xbox.getYButton()){
-        elevator.set(0.5);
+      // if (xbox.getYButton()){
+      //   elevator.set(0.5);
+      // }
+      // else{
+      //   elevator.set(0);
+      // }
+
+      if (xbox.getAButton()){
+        CAROUSEL_REQUEST_ADVANCE = true;
       }
-      else{
-        elevator.set(0);
-      }
+      carouselMovement();
+
+
+
 
   }
 
@@ -224,4 +255,61 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
+
+
+  
+
+  
+  
+
+
+
+// 
+// Carousel FSM
+//                              MODE_LOADING      MODE_UNLOADING    CAROUSEL_REQUEST_ADVANCE      LIMIT_SWITCH_POLARITY_NC   LIMIT_SWITCH_IS_ENABLED       
+// 
+// Carousel.Speed(0.1)                 X
+// Carousel.Speed(-0.1)                                   X
+// Limitswitch Set Polarity NO                                                  X                             X                         X
+// Limitswtich Set Polarity NC                                                                                                          X       
+// ^^ Set CAROUSEL_REQUEST_ADVANCE False                                     
+// 
+
+
+
+
+
+
+  public void carouselMovement(){
+    
+    boolean LIMIT_SWITCH_IS_ENABLED = CarouselForwardLimit.get();
+    if (MODE_LOADING){
+      carousel.set(0.06);
+    }
+    else if (!MODE_LOADING){
+      carousel.set(-0.06);
+    }
+
+    System.out.println("Carousel Request " + CAROUSEL_REQUEST_ADVANCE);
+    System.out.println("Polarity " + carouselForwardLimitSwithPolarity);
+    System.out.println("Limit Switch Enabled " + LIMIT_SWITCH_IS_ENABLED);
+    if (CAROUSEL_REQUEST_ADVANCE && carouselForwardLimitSwithPolarity == CANDigitalInput.LimitSwitchPolarity.kNormallyClosed && LIMIT_SWITCH_IS_ENABLED){
+      carouselForwardLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyOpen;
+      CarouselForwardLimit = carousel.getForwardLimitSwitch(carouselForwardLimitSwithPolarity);
+      
+
+    }
+    
+    else if(LIMIT_SWITCH_IS_ENABLED && carouselForwardLimitSwithPolarity == CANDigitalInput.LimitSwitchPolarity.kNormallyOpen){
+      
+      carouselForwardLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyClosed;
+      CarouselForwardLimit = carousel.getForwardLimitSwitch(carouselForwardLimitSwithPolarity);
+      CAROUSEL_REQUEST_ADVANCE = false;
+    }
+
+
+  }
+
+
 }
