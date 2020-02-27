@@ -58,19 +58,19 @@ public class Robot extends TimedRobot {
 
 /// CHANGE CAN IDS
     //Drive
-  private int leftdrCANID = 13; //CHANGE  ID
-  private int left2drCANID = 8; //CHANGE CAN ID
-  private int rightdrCANID = 14;  //CHANGE CAN ID
-  private int right2drCANID = 9;  //CHANGE CAN ID
+  private int leftdrCANID = 13; 
+  private int left2drCANID = 8; 
+  private int rightdrCANID = 14;  
+  private int right2drCANID = 9;  
     //Intake
-  private int intakeCANID = 7; //CHANGE CAN ID
-  private int secondaryIntakeCANID = 10; //CHANGE CAN ID
+  private int intakeCANID = 7; 
+  private int secondaryIntakeCANID = 10; 
     //Carousel
-  private int carousel1CANID = 12; //CHANGE CAN ID
-  private int carouselUnloadCANID = 16; //CHANGE CAN ID
+  private int carousel1CANID = 12;
+  private int carouselUnloadCANID = 16; 
     //Shooter
-  private int shooter1CANID = 11; //CHANGE CAN ID
-  private int shooter2CANID = 15; //CHANGE CAN ID
+  private int shooter1CANID = 11; 
+  private int shooter2CANID = 15; 
   //Falcon ID
   private int talonfxCANID = 0; //CHANGE CAN ID
   //Elevator
@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
     //Elevator
     elevator = new CANSparkMax(elevetorCANID, MotorType.kBrushless); 
 
-    //Carousel for Carousel Movement
+    
 
  
  
