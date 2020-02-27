@@ -198,9 +198,9 @@ public class Robot extends TimedRobot {
       //   intake.set(0.5);
       // }else{intake.set(0); }
 
-      // if (xbox.getBButton()){
-      //   secondaryIntake.set(0.5);
-      // }else{secondaryIntake.set(0);}
+      if (xbox.getBButton()){
+        secondaryIntake.set(1.0); //0.5
+    }else{secondaryIntake.set(0);}
 
       // //Carousel
       // if (xbox.getBumper(Hand.kRight)){
@@ -240,8 +240,13 @@ public class Robot extends TimedRobot {
       // }
 
       if (xbox.getAButton()){
+      //  MODE_LOADING = false;
         CAROUSEL_REQUEST_ADVANCE = true;
       }
+   /* if (xbox.getXButton()){
+        MODE_LOADING = false;
+        CAROUSEL_REQUEST_ADVANCE = true;
+      } */
       carouselMovement();
 
 
@@ -285,10 +290,10 @@ public class Robot extends TimedRobot {
     
     boolean LIMIT_SWITCH_IS_ENABLED = CarouselForwardLimit.get();
     if (MODE_LOADING){
-      carousel.set(0.06);
+      carousel.set(0.2);
     }
     else if (!MODE_LOADING){
-      carousel.set(-0.06);
+      carousel.set(-0.2);
     }
 
     System.out.println("Carousel Request " + CAROUSEL_REQUEST_ADVANCE);
@@ -307,6 +312,14 @@ public class Robot extends TimedRobot {
       CarouselForwardLimit = carousel.getForwardLimitSwitch(carouselForwardLimitSwithPolarity);
       CAROUSEL_REQUEST_ADVANCE = false;
     }
+
+
+  }
+// 0 digital is where ball needs to be full
+//2 digital needs to be empty in order to load.
+  public void carouselToNextEmptyPosition_Collecting(){
+    
+
 
 
   }
