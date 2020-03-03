@@ -79,15 +79,18 @@ public class Robot extends TimedRobot {
   private XboxController xbox; 
 
 
- boolean MODE_LOADING = true; //TODO: change to false in auto init with the other limit switch. Set to true for testing. 
+// boolean MODE_LOADING = true; //TODO: change to false in auto init with the other limit switch. Set to true for testing. 
  boolean CAROUSEL_REQUEST_ADVANCE = false;
- CANDigitalInput CarouselForwardLimit ;
+// CANDigitalInput CarouselForwardLimit ;
+ CANDigitalInput CarouselReverseLimit;
 
 
- CANDigitalInput.LimitSwitchPolarity carouselForwardLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyOpen;
- 
+ //CANDigitalInput.LimitSwitchPolarity carouselForwardLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyClosed;
+ CANDigitalInput.LimitSwitchPolarity carouselReverseLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyOpen;
 
-
+//Carousel
+DigitalInput dig0 = new DigitalInput(0);
+DigitalInput dig2 = new DigitalInput(2);
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -98,36 +101,37 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-   leftMotor = new CANSparkMax(leftdrCANID, MotorType.kBrushless);
-   left2motor = new CANSparkMax(left2drCANID, MotorType.kBrushless);
-   rightMotor = new CANSparkMax(rightdrCANID, MotorType.kBrushless);
-   right2motor = new CANSparkMax(right2drCANID, MotorType.kBrushless);
+  //  leftMotor = new CANSparkMax(leftdrCANID, MotorType.kBrushless);
+  //  left2motor = new CANSparkMax(left2drCANID, MotorType.kBrushless);
+  //  rightMotor = new CANSparkMax(rightdrCANID, MotorType.kBrushless);
+  //  right2motor = new CANSparkMax(right2drCANID, MotorType.kBrushless);
 
-   left2motor.follow(leftMotor);
-   right2motor.follow(rightMotor);
+  //  left2motor.follow(leftMotor);
+  //  right2motor.follow(rightMotor);
 
-   drive = new DifferentialDrive(leftMotor, rightMotor);
+  //drive = new DifferentialDrive(leftMotor, rightMotor);
    xbox = new XboxController(0); 
 
   //Falcon
-   talonFX = new WPI_TalonFX(talonfxCANID);
+ //  talonFX = new WPI_TalonFX(talonfxCANID);
   //Intake
    intake = new CANSparkMax(intakeCANID, MotorType.kBrushless);
   //Secondary Intake
-    secondaryIntake = new CANSparkMax(secondaryIntakeCANID, MotorType.kBrushless);
+ //   secondaryIntake = new CANSparkMax(secondaryIntakeCANID, MotorType.kBrushless);
   //Carousel
-    carouselUnload = new CANSparkMax(carouselUnloadCANID, MotorType.kBrushless);
+ //   carouselUnload = new CANSparkMax(carouselUnloadCANID, MotorType.kBrushless);
 
     carousel = new CANSparkMax(carousel1CANID, MotorType.kBrushless);
-     CarouselForwardLimit = new CANDigitalInput(carousel, CANDigitalInput.LimitSwitch.kForward, carouselForwardLimitSwithPolarity);
- 
-
+   //  CarouselForwardLimit = new CANDigitalInput(carousel, CANDigitalInput.LimitSwitch.kForward, carouselForwardLimitSwithPolarity);
+     CarouselReverseLimit = new CANDigitalInput(carousel, CANDigitalInput.LimitSwitch.kReverse, carouselReverseLimitSwithPolarity);
+    // CarouselForwardLimit.enableLimitSwitch(false);
+     CarouselReverseLimit.enableLimitSwitch(true);
 
   //Shooter
     shooter1 = new CANSparkMax(shooter1CANID, MotorType.kBrushless); 
     shooter2 = new CANSparkMax(shooter2CANID, MotorType.kBrushless); 
     //Elevator
-    elevator = new CANSparkMax(elevetorCANID, MotorType.kBrushless); 
+   // elevator = new CANSparkMax(elevetorCANID, MotorType.kBrushless); 
 
     
 
@@ -240,13 +244,14 @@ public class Robot extends TimedRobot {
       // }
 
       if (xbox.getAButton()){
-      //  MODE_LOADING = false;
+
         CAROUSEL_REQUEST_ADVANCE = true;
       }
-   /* if (xbox.getXButton()){
-        MODE_LOADING = false;
-        CAROUSEL_REQUEST_ADVANCE = true;
-      } */
+      
+   if (xbox.getYButton()){
+        carouselToNextEmptyPosition_Collecting();
+      } 
+
       carouselMovement();
 
 
@@ -288,28 +293,43 @@ public class Robot extends TimedRobot {
 
   public void carouselMovement(){
     
-    boolean LIMIT_SWITCH_IS_ENABLED = CarouselForwardLimit.get();
-    if (MODE_LOADING){
-      carousel.set(0.2);
-    }
-    else if (!MODE_LOADING){
+    boolean LIMIT_SWITCH_IS_ENABLED =  CarouselReverseLimit.get(); //|| CarouselForwardLimit.get()
+    // if (LIMIT_SWITCH_IS_ENABLED){
+    //   carousel.set(0.2);
+    // }
+   // if (MODE_LOADING){
       carousel.set(-0.2);
-    }
+      //CarouselReverseLimit.enableLimitSwitch(false);
+     // CarouselForwardLimit.enableLimitSwitch(true);
+   // }
+    // else if (!MODE_LOADING){
+    //   carousel.set(-0.2);
+    //  // CarouselForwardLimit.enableLimitSwitch(false);
+    //   CarouselReverseLimit.enableLimitSwitch(true);
+    // }
 
     System.out.println("Carousel Request " + CAROUSEL_REQUEST_ADVANCE);
-    System.out.println("Polarity " + carouselForwardLimitSwithPolarity);
+    System.out.println("Polarity " + carouselReverseLimitSwithPolarity);
     System.out.println("Limit Switch Enabled " + LIMIT_SWITCH_IS_ENABLED);
-    if (CAROUSEL_REQUEST_ADVANCE && carouselForwardLimitSwithPolarity == CANDigitalInput.LimitSwitchPolarity.kNormallyClosed && LIMIT_SWITCH_IS_ENABLED){
-      carouselForwardLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyOpen;
-      CarouselForwardLimit = carousel.getForwardLimitSwitch(carouselForwardLimitSwithPolarity);
-      
+    if (CAROUSEL_REQUEST_ADVANCE 
+    && carouselReverseLimitSwithPolarity == CANDigitalInput.LimitSwitchPolarity.kNormallyClosed 
+    && LIMIT_SWITCH_IS_ENABLED){
+   //   carouselForwardLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyOpen;
+     // CarouselForwardLimit = carousel.getForwardLimitSwitch(carouselForwardLimitSwithPolarity);
+
+      carouselReverseLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyOpen;
+      CarouselReverseLimit = carousel.getReverseLimitSwitch(carouselReverseLimitSwithPolarity);
 
     }
     
-    else if(LIMIT_SWITCH_IS_ENABLED && carouselForwardLimitSwithPolarity == CANDigitalInput.LimitSwitchPolarity.kNormallyOpen){
+    else if(LIMIT_SWITCH_IS_ENABLED 
+    && carouselReverseLimitSwithPolarity == CANDigitalInput.LimitSwitchPolarity.kNormallyOpen){
       
-      carouselForwardLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyClosed;
-      CarouselForwardLimit = carousel.getForwardLimitSwitch(carouselForwardLimitSwithPolarity);
+    //  carouselForwardLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyClosed;
+      //CarouselForwardLimit = carousel.getForwardLimitSwitch(carouselForwardLimitSwithPolarity);
+
+      carouselReverseLimitSwithPolarity = CANDigitalInput.LimitSwitchPolarity.kNormallyClosed;
+      CarouselReverseLimit = carousel.getReverseLimitSwitch(carouselReverseLimitSwithPolarity);
       CAROUSEL_REQUEST_ADVANCE = false;
     }
 
@@ -318,10 +338,11 @@ public class Robot extends TimedRobot {
 // 0 digital is where ball needs to be full
 //2 digital needs to be empty in order to load.
   public void carouselToNextEmptyPosition_Collecting(){
-    
-
-
-
+    //2 needs to be empty
+        //dig2.get();
+    while (dig2.get()){
+      CAROUSEL_REQUEST_ADVANCE = true;
+    }
   }
 
 
